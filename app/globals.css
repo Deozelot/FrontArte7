@@ -36,3 +36,8 @@ button:disabled { opacity: .6; cursor: default; }
 .form legend { font-weight: 600; padding: 0 6px; }
 .success { color: #16a34a; }
 .success a { text-decoration: underline; }
+.table { width: 100%; border-collapse: collapse; background: var(--card); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+.table th, .table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border); }
+.table th { font-size: .85rem; color: var(--muted); font-weight: 600; }
+.table tr:last-child td { border-bottom: 0; }
+@media (max-width: 600px) { .table { display: block; overflow-x: auto; } }

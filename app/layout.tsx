@@ -3,8 +3,8 @@ import Link from "next/link";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Arte7 · Actores",
-  description: "CRUD de actores",
+  title: "Arte7",
+  description: "Actores y películas de Arte7",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
@@ -15,6 +15,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <strong>Arte7</strong>
           <Link href="/actors">Actores</Link>
           <Link href="/actors/new">Crear actor</Link>
+          <Link href="/movies">Películas</Link>
           <Link href="/movies/new">Crear película</Link>
         </nav>
         <main>{children}</main>

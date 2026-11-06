@@ -113,7 +113,7 @@ export default function NewMoviePage() {
         </fieldset>
 
         {error && <p className="error" role="alert">{error}</p>}
-        {success && <p className="success" role="status">{success} <Link href="/actors">Ver actores</Link></p>}
+        {success && <p className="success" role="status">{success} <Link href="/movies">Ver películas</Link></p>}
         <div className="actions">
           <button type="submit" disabled={saving}>{saving ? "Creando…" : "Crear película"}</button>
         </div>

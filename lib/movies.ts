@@ -18,9 +18,19 @@ export type PrizeInput = { name: string; category: string; year: number; status:
 
 type Movie = { id: string; title: string };
 type Prize = { id: string; name: string };
+export type MovieListItem = Movie & { releaseDate: string; actors: Actor[]; prizes: Prize[] };
 
 export const getGenres = () => request<Named[]>("/genres");
 export const getDirectors = () => request<Named[]>("/directors");
+
+// GET /movies doesn't load prizes, so they come from /movies/:id/prizes.
+// ponytail: one request per movie; add 'prizes' to MovieService.findAll relations if the list grows.
+export async function getMoviesWithPrizes(): Promise<MovieListItem[]> {
+  const movies = await request<Omit<MovieListItem, "prizes">[]>("/movies");
+  return Promise.all(
+    movies.map(async (m) => ({ ...m, prizes: await request<Prize[]>(`/movies/${m.id}/prizes`) })),
+  );
+}
 
 async function step<T>(label: string, fn: () => Promise<T>): Promise<T> {
   try {
