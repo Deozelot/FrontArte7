@@ -34,7 +34,7 @@ export default function MoviesPage() {
           <tbody>
             {movies.map((m) => (
               <tr key={m.id}>
-                <td>{m.title}</td>
+                <td><Link href={`/movies/${m.id}`} className="link">{m.title}</Link></td>
                 <td>{m.releaseDate.slice(0, 10)}</td>
                 <td>{m.actors[0]?.name ?? "—"}</td>
                 <td>{m.prizes[0]?.name ?? "—"}</td>

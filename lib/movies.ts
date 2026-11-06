@@ -17,8 +17,27 @@ export type TrailerInput = { name: string; url: string; duration: number; channe
 export type PrizeInput = { name: string; category: string; year: number; status: "won" | "nominated" };
 
 type Movie = { id: string; title: string };
-type Prize = { id: string; name: string };
+export type Prize = { id: string; name: string; category?: string; year?: number; status?: string };
 export type MovieListItem = Movie & { releaseDate: string; actors: Actor[]; prizes: Prize[] };
+export type MovieDetail = MovieListItem & {
+  poster: string;
+  duration: number;
+  country: string;
+  popularity: number;
+  director?: { id: string; name: string };
+  genre?: { id: string; type: string };
+  youtubeTrailer?: { id: string; name: string; url: string; duration: number; channel: string };
+  platforms: { id: string; name: string; url: string }[];
+  reviews: { id: string; text: string; score: number; creator: string }[];
+};
+
+export async function getMovieDetail(id: string): Promise<MovieDetail> {
+  const [movie, prizes] = await Promise.all([
+    request<Omit<MovieDetail, "prizes">>(`/movies/${id}`),
+    request<Prize[]>(`/movies/${id}/prizes`),
+  ]);
+  return { ...movie, prizes };
+}
 
 export const getGenres = () => request<Named[]>("/genres");
 export const getDirectors = () => request<Named[]>("/directors");
