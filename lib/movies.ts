@@ -18,7 +18,13 @@ export type PrizeInput = { name: string; category: string; year: number; status:
 
 type Movie = { id: string; title: string };
 export type Prize = { id: string; name: string; category?: string; year?: number; status?: string };
-export type MovieListItem = Movie & { releaseDate: string; actors: Actor[]; prizes: Prize[] };
+export type MovieListItem = Movie & {
+  releaseDate: string;
+  actors: Actor[];
+  prizes: Prize[];
+  director?: { id: string; name: string };
+  genre?: { id: string; type: string };
+};
 export type MovieDetail = MovieListItem & {
   poster: string;
   duration: number;

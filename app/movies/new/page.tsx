@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import PageHead from "@/components/PageHead";
 import ActorFields, { EMPTY_ACTOR } from "@/components/ActorFields";
 import type { ActorInput } from "@/lib/actors";
 import { createMovieWithActorAndPrize, getDirectors, getGenres, type Named } from "@/lib/movies";
@@ -59,10 +60,11 @@ export default function NewMoviePage() {
 
   return (
     <>
-      <h1>Crear película</h1>
-      <form onSubmit={handleSubmit} className="form">
+      <PageHead eyebrow="Hoja de rodaje" title="Crear película" />
+      <form onSubmit={handleSubmit} className="form shoot rise">
         <fieldset>
-          <legend>Película</legend>
+          <legend><span className="mono">Escena 01</span>Película</legend>
+          <div className="fields">
           <label>Título<input value={movie.title} onChange={setM("title")} required /></label>
           <label>Póster (URL)<input type="url" value={movie.poster} onChange={setM("poster")} required /></label>
           <label>Duración (min)<input type="number" min={1} value={movie.duration} onChange={setM("duration")} required /></label>
@@ -83,23 +85,29 @@ export default function NewMoviePage() {
               {directors.map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}
             </select>
           </label>
+          </div>
         </fieldset>
 
         <fieldset>
-          <legend>Tráiler de YouTube</legend>
+          <legend><span className="mono">Escena 02</span>Tráiler de YouTube</legend>
+          <div className="fields">
           <label>Nombre<input value={trailer.name} onChange={setT("name")} required /></label>
           <label>URL<input type="url" value={trailer.url} onChange={setT("url")} required /></label>
           <label>Duración (min)<input type="number" min={1} value={trailer.duration} onChange={setT("duration")} required /></label>
           <label>Canal<input value={trailer.channel} onChange={setT("channel")} required /></label>
+          </div>
         </fieldset>
 
         <fieldset>
-          <legend>Actor principal</legend>
+          <legend><span className="mono">Escena 03</span>Actor principal</legend>
+          <div className="fields">
           <ActorFields value={actor} onChange={setActor} />
+          </div>
         </fieldset>
 
         <fieldset>
-          <legend>Premio</legend>
+          <legend><span className="mono">Escena 04</span>Premio</legend>
+          <div className="fields">
           <label>Nombre<input value={prize.name} onChange={setP("name")} required /></label>
           <label>Categoría<input value={prize.category} onChange={setP("category")} required /></label>
           <label>Año<input type="number" min={1900} max={2100} value={prize.year} onChange={setP("year")} required /></label>
@@ -110,12 +118,13 @@ export default function NewMoviePage() {
               <option value="nominated">Nominado</option>
             </select>
           </label>
+          </div>
         </fieldset>
 
-        {error && <p className="error" role="alert">{error}</p>}
-        {success && <p className="success" role="status">{success} <Link href="/movies">Ver películas</Link></p>}
+        {error && <p className="inline-error" role="alert">{error}</p>}
+        {success && <p className="success" role="status">{success} <Link href="/movies">Ver cartelera →</Link></p>}
         <div className="actions">
-          <button type="submit" disabled={saving}>{saving ? "Creando…" : "Crear película"}</button>
+          <button type="submit" className="btn" disabled={saving}>{saving ? "Creando…" : "¡Acción! Crear película"}</button>
         </div>
       </form>
     </>
