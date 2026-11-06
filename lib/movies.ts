@@ -48,13 +48,16 @@ export async function getMovieDetail(id: string): Promise<MovieDetail> {
 export const getGenres = () => request<Named[]>("/genres");
 export const getDirectors = () => request<Named[]>("/directors");
 
-// GET /movies doesn't load prizes, so they come from /movies/:id/prizes.
-// ponytail: one request per movie; add 'prizes' to MovieService.findAll relations if the list grows.
+// GET /movies doesn't load prizes, but GET /prizes includes each prize's movies: 2 requests, joined here.
 export async function getMoviesWithPrizes(): Promise<MovieListItem[]> {
-  const movies = await request<Omit<MovieListItem, "prizes">[]>("/movies");
-  return Promise.all(
-    movies.map(async (m) => ({ ...m, prizes: await request<Prize[]>(`/movies/${m.id}/prizes`) })),
-  );
+  const [movies, prizes] = await Promise.all([
+    request<Omit<MovieListItem, "prizes">[]>("/movies"),
+    request<(Prize & { movies?: { id: string }[] })[]>("/prizes"),
+  ]);
+  return movies.map((m) => ({
+    ...m,
+    prizes: prizes.filter((p) => p.movies?.some((pm) => pm.id === m.id)).map(({ movies: _, ...p }) => p),
+  }));
 }
 
 async function step<T>(label: string, fn: () => Promise<T>): Promise<T> {
