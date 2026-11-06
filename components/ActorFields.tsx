@@ -1,3 +1,4 @@
+import DateField from "./DateField";
 import type { ActorInput } from "@/lib/actors";
 
 export const EMPTY_ACTOR: ActorInput = { name: "", photo: "", nationality: "", birthDate: "", biography: "" };
@@ -22,10 +23,7 @@ export default function ActorFields({ value, onChange }: Props) {
         Nacionalidad
         <input value={value.nationality} onChange={set("nationality")} required />
       </label>
-      <label>
-        Fecha de nacimiento
-        <input type="date" value={value.birthDate} onChange={set("birthDate")} required />
-      </label>
+      <DateField label="Fecha de nacimiento" value={value.birthDate} onChange={(birthDate) => onChange({ ...value, birthDate })} />
       <label>
         Biografía
         <textarea value={value.biography} onChange={set("biography")} rows={3} required />

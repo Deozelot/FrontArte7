@@ -7,7 +7,7 @@ import { createActor } from "@/lib/actors";
 export default function NewActorPage() {
   return (
     <>
-      <PageHead eyebrow="Casting" title="Crear actor" />
+      <PageHead eyebrow="Casting" title="Crear actor" variant="form" />
       <ActorForm submitLabel="Crear actor" onSubmit={createActor} />
     </>
   );

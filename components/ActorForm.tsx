@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { ActorInput } from "@/lib/actors";
+import { clearFieldError, validateForm } from "@/lib/validate";
 import Frame from "./Frame";
 import ActorFields, { EMPTY_ACTOR } from "./ActorFields";
 
@@ -20,6 +21,7 @@ export default function ActorForm({ initial = EMPTY_ACTOR, submitLabel, onSubmit
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (!validateForm(e.currentTarget as HTMLFormElement)) return;
     setSaving(true);
     setError(null);
     try {
@@ -34,7 +36,7 @@ export default function ActorForm({ initial = EMPTY_ACTOR, submitLabel, onSubmit
 
   return (
     <div className="split rise">
-      <form onSubmit={handleSubmit} className="form">
+      <form onSubmit={handleSubmit} onInput={clearFieldError} className="form" noValidate>
         <ActorFields value={form} onChange={setForm} />
         {error && <p className="inline-error" role="alert">{error}</p>}
         <div className="actions">
@@ -43,7 +45,7 @@ export default function ActorForm({ initial = EMPTY_ACTOR, submitLabel, onSubmit
         </div>
       </form>
       <aside className="negative preview" aria-label="Vista previa">
-        <div className="film"><Preview url={form.photo} /></div>
+        <div className="film"><Preview url={form.photo} name={form.name} /></div>
         <p className="mono frame-no">▸ Vista previa</p>
         <h2>{form.name || "Nombre del actor"}</h2>
         <p className="mono meta">{form.nationality || "Nacionalidad"}</p>
@@ -52,12 +54,12 @@ export default function ActorForm({ initial = EMPTY_ACTOR, submitLabel, onSubmit
   );
 }
 
-function Preview({ url }: { url: string }) {
+function Preview({ url, name }: { url: string; name: string }) {
   const [bad, setBad] = useState<string | null>(null);
   if (!/^https?:\/\//i.test(url) || bad === url) return <div className="frame blank"><span className="mono">Sin imagen</span></div>;
   return (
     <div onErrorCapture={() => setBad(url)}>
-      <Frame src={url} alt="Vista previa de la fotografía" />
+      <Frame src={url} alt="Vista previa de la fotografía" label={name} />
     </div>
   );
 }

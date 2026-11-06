@@ -29,7 +29,7 @@ export default function MovieDetailPage({ params }: { params: Promise<{ id: stri
       <Link href="/movies" className="back mono">← Cartelera</Link>
       <section className="hero">
         <div className="hero-poster rise">
-          <Frame src={movie.poster} alt={`Póster de ${movie.title}`} />
+          <Frame src={movie.poster} alt={`Póster de ${movie.title}`} label={movie.title} kind="title" />
           <p className="mono caption">Fig. 1 — Póster</p>
         </div>
         <div className="hero-body">
@@ -96,11 +96,18 @@ export default function MovieDetailPage({ params }: { params: Promise<{ id: stri
         <ul className="reel">
           {movie.actors.map((a, i) => (
             <li key={a.id} className="negative small">
-              <div className="film"><Frame src={a.photo} alt={`Fotografía de ${a.name}`} /></div>
+              <div className="film"><Frame src={a.photo} alt={`Fotografía de ${a.name}`} label={a.name} /></div>
               <p className="mono frame-no">▸ {pad(i + 1)}A</p>
               <h3>{a.name}</h3>
               <p className="mono meta">{a.nationality} · {longDate(a.birthDate)}</p>
               <p className="bio">{a.biography}</p>
+            </li>
+          ))}
+          {Array.from({ length: Math.max(0, 4 - movie.actors.length) }, (_, k) => (
+            <li key={`r${k}`} className="negative small reserved" aria-hidden="true">
+              <div className="film"><div className="frame blank"><span className="mono">Reservado</span></div></div>
+              <p className="mono frame-no">▸ {pad(movie.actors.length + k + 1)}A</p>
+              <p className="mono meta">Plano sin rodar</p>
             </li>
           ))}
         </ul>
@@ -112,8 +119,11 @@ export default function MovieDetailPage({ params }: { params: Promise<{ id: stri
         <ul className="quotes">
           {movie.reviews.map((r) => (
             <li key={r.id}>
-              <p className="quote-text">{r.text}</p>
-              <p className="quote-by"><span className="score">{r.score}<small>/5</small></span><span className="mono">{r.creator}</span></p>
+              <div>
+                <p className="quote-text">{r.text}</p>
+                <p className="quote-by mono">— {r.creator}</p>
+              </div>
+              <p className="score" aria-label={`Puntuación ${r.score} de 5`}>{r.score}<small>/5</small></p>
             </li>
           ))}
         </ul>
