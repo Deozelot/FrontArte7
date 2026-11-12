@@ -3,7 +3,8 @@ export const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000/api
 export async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${API}${path}`, {
     ...init,
-    headers: { "Content-Type": "application/json" },
+    // Content-Type only with a body: on GETs it forces a CORS preflight per request.
+    headers: init?.body ? { "Content-Type": "application/json" } : undefined,
     cache: "no-store",
   });
   if (!res.ok) {

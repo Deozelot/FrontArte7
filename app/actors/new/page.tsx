@@ -1,13 +1,14 @@
 "use client";
 
 import ActorForm from "@/components/ActorForm";
+import PageHead from "@/components/PageHead";
 import { createActor } from "@/lib/actors";
 
 export default function NewActorPage() {
   return (
     <>
-      <h1>Crear actor</h1>
-      <ActorForm submitLabel="Crear" onSubmit={createActor} />
+      <PageHead eyebrow="Casting" title="Crear actor" variant="form" />
+      <ActorForm submitLabel="Crear actor" onSubmit={createActor} />
     </>
   );
 }

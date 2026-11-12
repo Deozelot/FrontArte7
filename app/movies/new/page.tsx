@@ -2,7 +2,12 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { pad } from "@/lib/format";
+import DateField from "@/components/DateField";
+import Frame from "@/components/Frame";
+import PageHead from "@/components/PageHead";
 import ActorFields, { EMPTY_ACTOR } from "@/components/ActorFields";
+import { clearFieldError, validateForm } from "@/lib/validate";
 import type { ActorInput } from "@/lib/actors";
 import { createMovieWithActorAndPrize, getDirectors, getGenres, type Named } from "@/lib/movies";
 
@@ -33,8 +38,17 @@ export default function NewMoviePage() {
   const setT = (f: keyof typeof trailer) => (e: Input) => setTrailer({ ...trailer, [f]: e.target.value });
   const setP = (f: keyof typeof prize) => (e: Input) => setPrize({ ...prize, [f]: e.target.value });
 
+  const count = (v: object) => Object.values(v).filter((x) => String(x).trim() !== "").length;
+  const scenes: [string, number, number][] = [
+    ["Película", count(movie), 8],
+    ["Tráiler", count(trailer), 4],
+    ["Actor", count(actor), 5],
+    ["Premio", count({ n: prize.name, c: prize.category, y: prize.year }), 3],
+  ];
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (!validateForm(e.currentTarget as HTMLFormElement)) return;
     setSaving(true);
     setError(null);
     setSuccess(null);
@@ -59,15 +73,35 @@ export default function NewMoviePage() {
 
   return (
     <>
-      <h1>Crear película</h1>
-      <form onSubmit={handleSubmit} className="form">
-        <fieldset>
-          <legend>Película</legend>
+      <PageHead eyebrow="Hoja de rodaje" title="Crear película" variant="form" />
+      <div className="shoot-wrap">
+      <aside className="rail" aria-label="Progreso del rodaje">
+        <div className="rail-poster">
+          <Frame src={movie.poster || ""} alt="Vista previa del póster" label={movie.title || "Sin título"} kind="title" />
+        </div>
+        <p className="rail-title">{movie.title || "Título por rodar"}</p>
+        <ol className="scenes">
+          {scenes.map(([name, done, total], i) => (
+            <li key={name} data-done={done === total}>
+              <a href={`#escena-${i + 1}`}>
+                <span className="mono">Esc. {pad(i + 1)}</span>
+                <b>{name}</b>
+                <i className="mono">{done}/{total}</i>
+              </a>
+              <span className="bar" style={{ "--p": done / total } as React.CSSProperties} />
+            </li>
+          ))}
+        </ol>
+      </aside>
+      <form onSubmit={handleSubmit} onInput={clearFieldError} className="form shoot rise" noValidate>
+        <fieldset id="escena-1">
+          <legend><span className="mono">Escena 01</span>Película</legend>
+          <div className="fields">
           <label>Título<input value={movie.title} onChange={setM("title")} required /></label>
           <label>Póster (URL)<input type="url" value={movie.poster} onChange={setM("poster")} required /></label>
           <label>Duración (min)<input type="number" min={1} value={movie.duration} onChange={setM("duration")} required /></label>
           <label>País<input value={movie.country} onChange={setM("country")} required /></label>
-          <label>Fecha de estreno<input type="date" value={movie.releaseDate} onChange={setM("releaseDate")} required /></label>
+          <DateField label="Fecha de estreno" value={movie.releaseDate} onChange={(releaseDate) => setMovie({ ...movie, releaseDate })} />
           <label>Popularidad (1-5)<input type="number" min={1} max={5} value={movie.popularity} onChange={setM("popularity")} required /></label>
           <label>
             Género
@@ -83,23 +117,29 @@ export default function NewMoviePage() {
               {directors.map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}
             </select>
           </label>
+          </div>
         </fieldset>
 
-        <fieldset>
-          <legend>Tráiler de YouTube</legend>
+        <fieldset id="escena-2">
+          <legend><span className="mono">Escena 02</span>Tráiler de YouTube</legend>
+          <div className="fields">
           <label>Nombre<input value={trailer.name} onChange={setT("name")} required /></label>
           <label>URL<input type="url" value={trailer.url} onChange={setT("url")} required /></label>
           <label>Duración (min)<input type="number" min={1} value={trailer.duration} onChange={setT("duration")} required /></label>
           <label>Canal<input value={trailer.channel} onChange={setT("channel")} required /></label>
+          </div>
         </fieldset>
 
-        <fieldset>
-          <legend>Actor principal</legend>
+        <fieldset id="escena-3">
+          <legend><span className="mono">Escena 03</span>Actor principal</legend>
+          <div className="fields">
           <ActorFields value={actor} onChange={setActor} />
+          </div>
         </fieldset>
 
-        <fieldset>
-          <legend>Premio</legend>
+        <fieldset id="escena-4">
+          <legend><span className="mono">Escena 04</span>Premio</legend>
+          <div className="fields">
           <label>Nombre<input value={prize.name} onChange={setP("name")} required /></label>
           <label>Categoría<input value={prize.category} onChange={setP("category")} required /></label>
           <label>Año<input type="number" min={1900} max={2100} value={prize.year} onChange={setP("year")} required /></label>
@@ -110,14 +150,16 @@ export default function NewMoviePage() {
               <option value="nominated">Nominado</option>
             </select>
           </label>
+          </div>
         </fieldset>
 
-        {error && <p className="error" role="alert">{error}</p>}
-        {success && <p className="success" role="status">{success} <Link href="/movies">Ver películas</Link></p>}
+        {error && <p className="inline-error" role="alert">{error}</p>}
+        {success && <p className="success" role="status">{success} <Link href="/movies">Ver cartelera →</Link></p>}
         <div className="actions">
-          <button type="submit" disabled={saving}>{saving ? "Creando…" : "Crear película"}</button>
+          <button type="submit" className="btn" disabled={saving}>{saving ? "Creando…" : "¡Acción! Crear película"}</button>
         </div>
       </form>
+      </div>
     </>
   );
 }
